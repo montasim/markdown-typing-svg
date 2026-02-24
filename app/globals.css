@@ -141,3 +141,48 @@ body {
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Minimal skeleton - no animation, ultra-subtle opacity */
+.skeleton {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+}
+
+.dark .skeleton {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Skeleton variants */
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5em;
+}
+
+.skeleton-text-sm {
+  height: 0.875em;
+}
+
+.skeleton-text-lg {
+  height: 1.25em;
+}
+
+.skeleton-title {
+  height: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.skeleton-avatar {
+  border-radius: 50%;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+}
+
+.skeleton-rounded {
+  border-radius: 8px;
+}
+
+.skeleton-pill {
+  border-radius: 9999px;
+}

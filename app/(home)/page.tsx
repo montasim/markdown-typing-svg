@@ -19,6 +19,7 @@ import { useUndoRedo } from '@/hooks/useUndoRedo';
 import { useKeyboardShortcuts, commonShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { textTemplates, templateCategories } from '@/config/templates';
 import { platformPresets } from '@/config/platform-presets';
+import { PageSkeleton, SVGSkeleton } from '@/components/skeleton';
 
 type TabType = 'typography' | 'colors' | 'effects' | 'advanced';
 type CodeTabType = 'markdown' | 'html' | 'url';
@@ -55,6 +56,10 @@ export default function DemoPage() {
   const debouncedOptions = useDebounce(options, 300);
   const isFirstRender = useRef(true);
 
+  // Loading states for skeleton
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [svgLoading, setSvgLoading] = useState(true);
+
   // Setup keyboard shortcuts
   useKeyboardShortcuts([
     { ...commonShortcuts.undo, handler: () => { if (canUndo) undo(); } },
@@ -78,6 +83,14 @@ export default function DemoPage() {
     url.search = queryString;
     window.history.replaceState({}, '', url.toString());
   }, [options]);
+
+  // Handle initial page load skeleton
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false);
+    }, 500); // Short delay to show skeleton
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOptionsChange = useCallback((newOptions: Partial<TypingSVGOptions>) => {
     setOptions({ ...options, ...newOptions });
@@ -225,6 +238,20 @@ export default function DemoPage() {
   const markdown = `[![Typing SVG](${imageUrl})](${repoLink})`;
   const html = `<a href="${repoLink}"><img src="${imageUrl}" alt="Typing SVG" /></a>`;
   const directUrl = imageUrl;
+
+  // Handle SVG loading state
+  useEffect(() => {
+    setSvgLoading(true);
+
+    const img = new Image();
+    img.onload = () => {
+      setSvgLoading(false);
+    };
+    img.onerror = () => {
+      setSvgLoading(false);
+    };
+    img.src = svgUrl;
+  }, [svgUrl]);
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -379,7 +406,10 @@ export default function DemoPage() {
   return (
     <>
       <ToastDisplay />
-      <div className="py-6 sm:py-8">
+      {isInitialLoad ? (
+        <PageSkeleton />
+      ) : (
+        <div className="py-6 sm:py-8">
       <div className="container mx-auto px-4 sm:px-6">
         {/* Header with Quick Actions Bar */}
         <div className="mb-4 sm:mb-6">
@@ -525,13 +555,18 @@ export default function DemoPage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="relative bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
-                <img
-                  src={svgUrl}
-                  alt="Typing SVG Preview"
-                  className={`w-full mx-auto ${showBorder ? 'border-2 border-dashed border-red-500 rounded' : ''}`}
-                />
-              </div>
+              {svgLoading ? (
+                <SVGSkeleton />
+              ) : (
+                <>
+                  <div className="relative bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
+                    <img
+                      src={svgUrl}
+                      alt="Typing SVG Preview"
+                      className={`w-full mx-auto ${showBorder ? 'border-2 border-dashed border-red-500 rounded' : ''}`}
+                      onLoad={() => setSvgLoading(false)}
+                    />
+                  </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Switch
@@ -545,6 +580,8 @@ export default function DemoPage() {
                   {options.width}×{options.height}px
                 </div>
               </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -1424,8 +1461,9 @@ export default function DemoPage() {
             ))}
           </div>
         </div>
+        </div>
       </div>
-    </div>
+      )}
     </>
   );
 }
