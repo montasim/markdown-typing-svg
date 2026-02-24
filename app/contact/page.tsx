@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Mail, Github, Send, CheckCircle, AlertCircle, HelpCircle, ChevronUp, ChevronDown } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -47,6 +48,9 @@ export default function ContactPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      {/* Breadcrumbs */}
+      <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact' }]} />
+
       {/* Hero Section */}
       <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12">
         <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-900 dark:text-slate-50">

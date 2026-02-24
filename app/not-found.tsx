@@ -1,7 +1,11 @@
+import type { Metadata } from 'next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Search, Home, Keyboard } from 'lucide-react';
 import Link from 'next/link';
+import { generateNotFoundMetadata } from '@/lib/seo/metadata';
+
+export const metadata: Metadata = generateNotFoundMetadata();
 
 export default function NotFound() {
   return (

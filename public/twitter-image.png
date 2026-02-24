@@ -1,0 +1,18 @@
+This is a placeholder for the Twitter Card image (1200x600px).
+
+To create the actual image:
+1. Create a 1200x600px PNG image
+2. Include the app name "Markdown Typing SVG"
+3. Add a tagline like "Create Animated SVGs for Your README"
+4. Show an example of the typing SVG animation
+5. Use brand colors (indigo/purple gradient)
+6. Ensure text is readable on the background
+7. Save as twitter-image.png in the public folder
+
+Example design elements:
+- Gradient background: from-indigo-500 to-purple-600
+- White text with shadow for readability
+- Keyboard/typing icon or animation preview
+- Clean, modern design
+- App logo or icon in corner
+- Optimized for Twitter's card display

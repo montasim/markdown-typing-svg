@@ -1,0 +1,18 @@
+# https://www.robotstxt.org/robotstxt.html
+# Allow all crawlers to access the site
+User-agent: *
+Allow: /
+
+# Disallow API endpoints
+Disallow: /api/
+
+# Disallow Next.js internal routes
+Disallow: /_next/
+Disallow: /_error/
+Disallow: /404/
+
+# Sitemap location
+Sitemap: https://markdown-typing-svg.netlify.app/sitemap.xml
+
+# Crawl delay (optional, to prevent overloading the server)
+Crawl-delay: 1
