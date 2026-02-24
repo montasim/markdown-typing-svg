@@ -420,7 +420,7 @@ export default function DemoPage() {
                       Copy
                     </Button>
                   </div>
-                  <pre className="bg-slate-100 dark:bg-slate-900 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm">
+                  <pre className="bg-slate-100 dark:bg-slate-900 p-3 sm:p-4 rounded-lg w-full text-xs sm:text-sm overflow-x-auto whitespace-pre-wrap break-all">
                     <code id="markdown">{markdown}</code>
                   </pre>
                 </div>
@@ -437,7 +437,7 @@ export default function DemoPage() {
                       Copy
                     </Button>
                   </div>
-                  <pre className="bg-slate-100 dark:bg-slate-900 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm">
+                  <pre className="bg-slate-100 dark:bg-slate-900 p-3 sm:p-4 rounded-lg w-full text-xs sm:text-sm overflow-x-auto whitespace-pre-wrap break-all">
                     <code id="html">{html}</code>
                   </pre>
                 </div>
@@ -454,7 +454,7 @@ export default function DemoPage() {
                       Copy
                     </Button>
                   </div>
-                  <pre className="bg-slate-100 dark:bg-slate-900 p-3 sm:p-4 rounded-lg overflow-x-auto text-xs sm:text-sm break-all">
+                  <pre className="bg-slate-100 dark:bg-slate-900 p-3 sm:p-4 rounded-lg w-full text-xs sm:text-sm overflow-x-auto whitespace-pre-wrap break-all">
                     <code id="url">{directUrl}</code>
                   </pre>
                 </div>

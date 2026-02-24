@@ -14,10 +14,19 @@ export function buildQueryString(options: TypingSVGOptions): string {
   Object.entries(options).forEach(([key, value]) => {
     if (key === 'lines') return; // Already handled above
     
-    const defaultValue = defaultOptions[key as keyof TypingSVGOptions];
+    const keyOfOptions = key as keyof TypingSVGOptions;
+    const defaultValue = defaultOptions[keyOfOptions];
     
     // Skip if value matches default
-    if (value !== defaultValue) {
+    let shouldSkip = false;
+    if (Array.isArray(value) && Array.isArray(defaultValue)) {
+      // Compare arrays by value
+      shouldSkip = JSON.stringify(value) === JSON.stringify(defaultValue);
+    } else {
+      shouldSkip = value === defaultValue;
+    }
+    
+    if (!shouldSkip) {
       // Remove hash from colors for URL
       let stringValue = String(value);
       if (key === 'color' || key === 'background') {
@@ -47,8 +56,24 @@ export function parseQueryParams(searchParams: URLSearchParams): Partial<TypingS
   
   const lines = searchParams.get('lines');
   if (lines) {
-    // Replace + with spaces (URL-encoded spaces)
-    const decodedLines = lines.replace(/\+/g, ' ');
+    // Decode URL-encoded characters (handles %2C for commas, %20 for spaces, etc.)
+    // URLSearchParams.get() already decodes once, but we need to handle cases
+    // where the URL might be double-encoded
+    let decodedLines: string;
+    try {
+      decodedLines = decodeURIComponent(lines);
+      // Handle double-encoded URLs by checking if there are still encoded patterns
+      // after the first decode (e.g., %25 becomes % after first decode)
+      // Continue decoding until no more percent-encoded sequences remain
+      while (/%[0-9A-F]{2}/i.test(decodedLines)) {
+        decodedLines = decodeURIComponent(decodedLines);
+      }
+    } catch {
+      // If decoding fails, use the original value
+      decodedLines = lines;
+    }
+    // Replace + with spaces (URL encoding uses + for spaces)
+    decodedLines = decodedLines.replace(/\+/g, ' ');
     const separator = searchParams.get('separator') || ';';
     options.lines = decodedLines.split(separator).filter(line => line.length > 0);
   }
@@ -57,10 +82,20 @@ export function parseQueryParams(searchParams: URLSearchParams): Partial<TypingS
   if (font) options.font = font;
   
   const weight = searchParams.get('weight');
-  if (weight) options.weight = parseInt(weight, 10);
+  if (weight) {
+    const parsedWeight = parseInt(weight, 10);
+    if (!isNaN(parsedWeight)) {
+      options.weight = parsedWeight;
+    }
+  }
   
   const size = searchParams.get('size');
-  if (size) options.size = parseInt(size, 10);
+  if (size) {
+    const parsedSize = parseInt(size, 10);
+    if (!isNaN(parsedSize)) {
+      options.size = parsedSize;
+    }
+  }
   
   const color = searchParams.get('color');
   if (color) options.color = `#${color}`;
@@ -75,19 +110,39 @@ export function parseQueryParams(searchParams: URLSearchParams): Partial<TypingS
   if (vCenter) options.vCenter = vCenter === 'true';
   
   const width = searchParams.get('width');
-  if (width) options.width = parseInt(width, 10);
+  if (width) {
+    const parsedWidth = parseInt(width, 10);
+    if (!isNaN(parsedWidth)) {
+      options.width = parsedWidth;
+    }
+  }
   
   const height = searchParams.get('height');
-  if (height) options.height = parseInt(height, 10);
+  if (height) {
+    const parsedHeight = parseInt(height, 10);
+    if (!isNaN(parsedHeight)) {
+      options.height = parsedHeight;
+    }
+  }
   
   const multiline = searchParams.get('multiline');
   if (multiline) options.multiline = multiline === 'true';
   
   const duration = searchParams.get('duration');
-  if (duration) options.duration = parseInt(duration, 10);
+  if (duration) {
+    const parsedDuration = parseInt(duration, 10);
+    if (!isNaN(parsedDuration)) {
+      options.duration = parsedDuration;
+    }
+  }
   
   const pause = searchParams.get('pause');
-  if (pause) options.pause = parseInt(pause, 10);
+  if (pause) {
+    const parsedPause = parseInt(pause, 10);
+    if (!isNaN(parsedPause)) {
+      options.pause = parsedPause;
+    }
+  }
   
   const repeat = searchParams.get('repeat');
   if (repeat) options.repeat = repeat === 'true';
@@ -99,7 +154,13 @@ export function parseQueryParams(searchParams: URLSearchParams): Partial<TypingS
   if (separator) options.separator = separator;
   
   const letterSpacing = searchParams.get('letterSpacing');
-  if (letterSpacing) options.letterSpacing = letterSpacing;
+  if (letterSpacing) {
+    // Validate that it's a reasonable CSS value (number, normal, or valid unit)
+    const validPattern = /^(normal|\d+(\.\d+)?(px|em|rem|%|ch|ex|vw|vh)?)$/;
+    if (validPattern.test(letterSpacing)) {
+      options.letterSpacing = letterSpacing;
+    }
+  }
   
   return options;
 }
