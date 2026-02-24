@@ -14,9 +14,9 @@ export async function GET(request: NextRequest) {
     
     // Check if lines parameter is provided
     if (!searchParams.get('lines')) {
-      // Redirect to demo page if no lines provided
-      const demoUrl = new URL('/demo', request.url);
-      return NextResponse.redirect(demoUrl);
+      // Redirect to root page if no lines provided
+      const rootUrl = new URL('/', request.url);
+      return NextResponse.redirect(rootUrl);
     }
 
     // Parse query parameters

@@ -24,8 +24,8 @@ Visit `http://localhost:3000` to see the landing page with:
 - Feature cards
 - "Get Started" button
 
-#### Demo/Editor Page
-Visit `http://localhost:3000/demo` to access the interactive editor with:
+#### Editor Page
+Visit `http://localhost:3000` to access the interactive editor with:
 - Text lines editor (add/remove lines)
 - Typography options (font, size, letter spacing)
 - Color pickers (text and background)
@@ -40,7 +40,7 @@ Visit `http://localhost:3000/demo` to access the interactive editor with:
 ### 4. Test SVG Generation
 
 #### Basic Test
-1. Go to `/demo`
+1. Go to `/`
 2. The preview should show an animated typing SVG
 3. Try changing the text in the first line
 4. The preview should update automatically
@@ -137,8 +137,8 @@ curl "http://localhost:3000/api/svg?lines=Test;Multiple;Lines&font=Fira+Code&col
 
 Before considering the implementation complete, verify:
 
-- [ ] Landing page loads and displays correctly
-- [ ] Demo page loads without errors
+- [ ] Root page loads and displays correctly
+- [ ] Editor loads without errors
 - [ ] SVG preview shows animated typing
 - [ ] Adding/removing text lines works
 - [ ] All options (font, colors, size, etc.) update preview

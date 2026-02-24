@@ -39,10 +39,10 @@ export default function NotFound() {
               </Button>
             </Link>
 
-            <Link href="/demo" className="block w-full">
+            <Link href="/" className="block w-full">
               <Button variant="outline" className="w-full" size="lg">
                 <Keyboard className="mr-2 w-4 h-4" />
-                Try the Demo
+                Try the Editor
               </Button>
             </Link>
           </div>

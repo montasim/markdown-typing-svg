@@ -75,7 +75,6 @@ PHP Version:
 Next.js Version:
 ├── app/                    # Next.js App Router
 ├── components/              # React components
-│   ├── demo/
 │   ├── layout/
 │   └── ui/
 ├── lib/                    # Business logic

@@ -35,7 +35,7 @@ pnpm dev
 
 ### Usage
 
-1. Navigate to [http://localhost:3000/demo](http://localhost:3000/demo)
+1. Navigate to [http://localhost:3000](http://localhost:3000)
 2. Enter your text lines
 3. Customize the options (font, colors, size, animation, etc.)
 4. Copy the generated Markdown or HTML code
@@ -94,12 +94,10 @@ This project follows clean code principles and SOLID design patterns:
 markdown-typing-svg/
 ├── app/                    # Next.js App Router pages
 │   ├── api/svg/           # API endpoint for SVG generation
-│   ├── demo/               # Demo/editor page
 │   ├── layout.tsx          # Root layout
-│   ├── page.tsx            # Landing page
+│   ├── page.tsx            # Landing page with interactive editor
 │   └── globals.css         # Global styles
 ├── components/              # React components
-│   ├── demo/               # Demo-specific components
 │   ├── layout/             # Layout components
 │   └── ui/                 # Reusable UI components (shadcn/ui)
 ├── lib/                    # Core business logic
@@ -159,7 +157,7 @@ No environment variables are required for basic functionality. Optional variable
 
 ### Manual Testing
 
-1. Visit the demo page at `/demo`
+1. Visit the root page at `/`
 2. Test all configuration options
 3. Verify SVG generation with different parameters
 4. Test copy to clipboard functionality
