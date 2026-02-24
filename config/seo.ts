@@ -128,9 +128,9 @@ export const seoConfig = {
       description: 'Create beautiful animated typing SVGs for your GitHub README, profiles, and more.',
       sameAs: [
         process.env.NEXT_PUBLIC_GITHUB_URL,
-        process.env.NEXT_PUBLIC_TWITTER_HANDLE && `https://twitter.com/${process.env.NEXT_PUBLIC_TWITTER_HANDLE.replace('@', '')}`,
+        process.env.NEXT_PUBLIC_TWITTER_HANDLE ? `https://twitter.com/${process.env.NEXT_PUBLIC_TWITTER_HANDLE.replace('@', '')}` : undefined,
         process.env.NEXT_PUBLIC_LINKEDIN_URL,
-      ].filter(Boolean) as string[],
+      ].filter((url): url is string => Boolean(url)),
     },
     softwareApplication: {
       name: 'Markdown Typing SVG',

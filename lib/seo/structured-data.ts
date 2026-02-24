@@ -228,7 +228,8 @@ export function generateHomeStructuredData() {
  * Generate structured data for legal pages (Privacy/Terms)
  */
 export function generateLegalStructuredData(title: string, path: string, lastModified: string) {
-  const webPage = generateWebPageSchema(title, seoConfig.pages[path as keyof typeof seoConfig.pages]?.description || '', path, lastModified);
+  const pageConfig = seoConfig.pages[path as keyof typeof seoConfig.pages];
+  const webPage = generateWebPageSchema(title, pageConfig?.description || '', path, lastModified);
   const organization = generateOrganizationSchema();
 
   const breadcrumb = generateBreadcrumbListSchema([
