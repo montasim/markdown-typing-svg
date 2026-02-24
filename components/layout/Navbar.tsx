@@ -50,7 +50,7 @@ export function Navbar() {
               <span>GitHub</span>
             </a>
 
-            {/* Theme Toggle */}
+            {/* Theme Toggle
             <Button
               variant="outline"
               size="icon"
@@ -58,7 +58,7 @@ export function Navbar() {
               className="border-slate-200 dark:border-slate-700 h-10 w-10 sm:h-10 sm:w-10"
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
+            </Button> */}
 
             {/* Mobile Menu Button */}
             <Button
