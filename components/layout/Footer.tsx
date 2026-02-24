@@ -17,7 +17,7 @@ const socialLinks = [
   },
   {
     name: 'GitHub',
-    href: siteConfig.github.url,
+    href: siteConfig.developer.githubUrl,
     icon: Github,
   },
 ];

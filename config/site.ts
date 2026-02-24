@@ -34,6 +34,7 @@ export const siteConfig = {
   developer: {
     name: process.env.NEXT_PUBLIC_DEVELOPER_NAME || 'Your Name',
     website: process.env.NEXT_PUBLIC_DEVELOPER_WEBSITE || 'https://yourwebsite.com',
+    githubUrl: process.env.NEXT_PUBLIC_DEVELOPER_GITHUB_URL || 'https://github.com/yourusername',
   },
 };
 
