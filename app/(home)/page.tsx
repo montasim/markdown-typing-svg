@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Plus, ChevronDown, ChevronUp, Palette, Moon, Zap, Type, Settings, Copy, Share2, Gauge, Accessibility, Keyboard, Sparkles, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,18 +10,36 @@ import { Slider } from '@/components/ui/slider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { defaultOptions, dummyText } from '@/config/defaults';
 import { TypingSVGOptions } from '@/types/options';
-import { buildQueryString } from '@/lib/utils/url';
+import { buildQueryString, parseQueryParams } from '@/lib/utils/url';
 import { useDebounce } from '@/hooks/useDebounce';
 
 export default function DemoPage() {
-  const [options, setOptions] = useState<TypingSVGOptions>(defaultOptions);
+  // Parse URL parameters on initial load
+  const getInitialOptions = (): TypingSVGOptions => {
+    if (typeof window === 'undefined') return defaultOptions;
+    
+    const searchParams = new URLSearchParams(window.location.search);
+    const parsedOptions = parseQueryParams(searchParams);
+    
+    // Merge parsed options with defaults
+    return { ...defaultOptions, ...parsedOptions };
+  };
+
+  const [options, setOptions] = useState<TypingSVGOptions>(getInitialOptions);
   const [showBorder, setShowBorder] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const debouncedOptions = useDebounce(options, 300);
+  const isFirstRender = useRef(true);
 
-  // Update URL when options change
+  // Update URL when options change (but not on initial render)
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Skip URL update on first render to preserve user's URL
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     
     const queryString = buildQueryString(options);
     const url = new URL(window.location.href);
