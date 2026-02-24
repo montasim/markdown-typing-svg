@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 
 export interface LegalSection {
   title: string;
@@ -13,6 +14,7 @@ export interface LegalPageLayoutProps {
   description: string;
   lastUpdated: string;
   sections: LegalSection[];
+  breadcrumbs?: Array<{ name: string; href: string }>;
 }
 
 export function LegalPageLayout({
@@ -20,9 +22,13 @@ export function LegalPageLayout({
   description,
   lastUpdated,
   sections,
+  breadcrumbs,
 }: LegalPageLayoutProps) {
   return (
     <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      {/* Breadcrumbs */}
+      {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
+
       {/* Hero Section */}
       <div className="max-w-3xl mx-auto text-center mb-8 sm:mb-12">
         <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-slate-900 dark:text-slate-50">

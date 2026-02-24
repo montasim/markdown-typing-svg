@@ -125,6 +125,7 @@ export default function TermsPage() {
       description="Please read these terms carefully before using Markdown Typing SVG."
       lastUpdated={lastUpdated}
       sections={sections}
+      breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Terms', href: '/terms' }]}
     />
   );
 }

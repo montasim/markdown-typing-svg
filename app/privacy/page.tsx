@@ -147,6 +147,7 @@ export default function PrivacyPage() {
       description="Your privacy is important to us. Learn how we protect your data."
       lastUpdated={lastUpdated}
       sections={sections}
+      breadcrumbs={[{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy' }]}
     />
   );
 }
