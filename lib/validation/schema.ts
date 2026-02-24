@@ -22,6 +22,23 @@ export const TypingSVGOptionsSchema: z.ZodType<TypingSVGOptions> = z.object({
   separator: z.string(),
   random: z.boolean(),
   letterSpacing: z.string(),
+  gradient: z.boolean(),
+  gradientFrom: z.string().regex(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/, 'Invalid color format'),
+  gradientTo: z.string().regex(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/, 'Invalid color format'),
+  cursor: z.boolean(),
+  cursorColor: z.string().regex(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/, 'Invalid color format'),
+  borderRadius: z.number().int().nonnegative('Border radius must be non-negative'),
+  textShadow: z.boolean(),
+  textShadowBlur: z.number().nonnegative('Text shadow blur must be non-negative'),
+  textShadowColor: z.string().regex(/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/, 'Invalid color format'),
+  textShadowOffsetX: z.number(),
+  textShadowOffsetY: z.number(),
+  animationType: z.enum(['typing', 'fade', 'slide', 'bounce', 'wave']),
+  easing: z.enum(['linear', 'ease-in', 'ease-out', 'ease-in-out', 'custom']),
+  easingBezier: z.string().optional(),
+  cursorStyle: z.enum(['block', 'line', 'underscore']),
+  reverseTyping: z.boolean(),
+  characterPauses: z.array(z.number()).optional(),
 });
 
 /**

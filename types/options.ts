@@ -36,6 +36,40 @@ export interface TypingSVGOptions {
   random: boolean;
   /** Letter spacing CSS value */
   letterSpacing: string;
+  /** Enable gradient text effect */
+  gradient: boolean;
+  /** Gradient start color (for gradient mode) */
+  gradientFrom: string;
+  /** Gradient end color (for gradient mode) */
+  gradientTo: string;
+  /** Show blinking cursor at end of text */
+  cursor: boolean;
+  /** Cursor color */
+  cursorColor: string;
+  /** Border radius for background */
+  borderRadius: number;
+  /** Enable text shadow/glow effect */
+  textShadow: boolean;
+  /** Text shadow blur radius */
+  textShadowBlur: number;
+  /** Text shadow color */
+  textShadowColor: string;
+  /** Text shadow horizontal offset */
+  textShadowOffsetX: number;
+  /** Text shadow vertical offset */
+  textShadowOffsetY: number;
+  /** Animation type (typing, fade, slide, bounce, wave) */
+  animationType: 'typing' | 'fade' | 'slide' | 'bounce' | 'wave';
+  /** Animation easing function */
+  easing: 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'custom';
+  /** Custom easing bezier curve (when easing is 'custom') */
+  easingBezier?: string;
+  /** Cursor style (block, line, underscore) */
+  cursorStyle: 'block' | 'line' | 'underscore';
+  /** Enable reverse typing effect */
+  reverseTyping: boolean;
+  /** Character pauses (array of character indices to pause at) */
+  characterPauses?: number[];
 }
 
 /**

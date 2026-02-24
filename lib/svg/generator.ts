@@ -46,12 +46,17 @@ export class SVGGenerator {
    * Render the complete SVG string
    */
   private renderSVG(): string {
-    const { width, height, background, size, multiline, lines } = this.options;
+    const { width, height, background, size, multiline, lines, borderRadius } = this.options;
     const paths = this.generatePaths();
     const texts = this.generateTexts();
+    const defs = this.generateDefs();
+    const cursor = this.generateCursor();
 
     // Calculate appropriate height based on font size if current height is too small
     const calculatedHeight = this.calculateHeight(height, size, multiline, lines.length);
+
+    // Generate rounded corners attribute if borderRadius > 0
+    const rxAttr = borderRadius > 0 ? ` rx='${borderRadius}'` : '';
 
     return `<!-- https://github.com/DenverCoder1/readme-typing-svg/ -->
 <svg xmlns='http://www.w3.org/2000/svg'
@@ -60,9 +65,111 @@ export class SVGGenerator {
     style='background-color: ${background};'
     width='${width}px' height='${calculatedHeight}px'>
   ${this.fontCSS}
+  ${defs}
+  <rect width='100%' height='100%' fill='${background}'${rxAttr} opacity='0'/>${background !== '#00000000' ? `\n  <rect width='100%' height='100%' fill='${background}'${rxAttr}/>` : ''}
   ${paths}
   ${texts}
+  ${cursor}
 </svg>`;
+  }
+
+  /**
+   * Generate gradient definition for gradient text mode
+   */
+  private generateGradientDef(): string {
+    const { gradient, gradientFrom, gradientTo } = this.options;
+
+    if (!gradient) return '';
+
+    return `<linearGradient id='textGradient' x1='0%' y1='0%' x2='100%' y2='0%'>
+      <stop offset='0%' stop-color='${gradientFrom}' />
+      <stop offset='100%' stop-color='${gradientTo}' />
+    </linearGradient>`;
+  }
+
+  /**
+   * Generate filter definition for text shadow
+   */
+  private generateFilterDef(): string {
+    const { textShadow, textShadowBlur, textShadowColor, textShadowOffsetX, textShadowOffsetY } = this.options;
+
+    if (!textShadow) return '';
+
+    return `<filter id='textShadow' x='-50%' y='-50%' width='200%' height='200%'>
+      <feDropShadow
+        dx='${textShadowOffsetX}'
+        dy='${textShadowOffsetY}'
+        stdDeviation='${textShadowBlur}'
+        flood-color='${textShadowColor}'
+        flood-opacity='0.5'
+      />
+    </filter>`;
+  }
+
+  /**
+   * Generate combined defs block for gradient and/or text shadow
+   */
+  private generateDefs(): string {
+    const gradientDef = this.generateGradientDef();
+    const filterDef = this.generateFilterDef();
+
+    if (!gradientDef && !filterDef) return '';
+
+    return `<defs>
+  ${gradientDef}
+  ${filterDef}
+</defs>`;
+  }
+
+  /**
+   * Generate blinking cursor element
+   */
+  private generateCursor(): string {
+    const { cursor, cursorColor, cursorStyle, size, font, center, vCenter, letterSpacing, lines, duration, pause, repeat } = this.options;
+
+    if (!cursor || lines.length === 0) return '';
+
+    // Calculate total animation time for the last line
+    const totalDuration = duration + pause;
+    const beginTime = lines.length > 1 ? `${(lines.length - 1) * totalDuration}ms` : '0ms';
+    const repeatAttr = repeat ? `repeat indefinite` : '';
+
+    // Generate cursor based on style
+    switch (cursorStyle) {
+      case 'block':
+        return this.generateBlockCursor(cursorColor, size, center, vCenter, beginTime, repeatAttr);
+      case 'line':
+        return this.generateLineCursor(cursorColor, size, center, vCenter, beginTime, repeatAttr);
+      case 'underscore':
+        return this.generateUnderscoreCursor(cursorColor, size, center, vCenter, beginTime, repeatAttr);
+      default:
+        return this.generateBlockCursor(cursorColor, size, center, vCenter, beginTime, repeatAttr);
+    }
+  }
+
+  private generateBlockCursor(color: string, size: number, center: boolean, vCenter: boolean, beginTime: string, repeatAttr: string): string {
+    const cursorWidth = Math.max(2, size * 0.1);
+    const cursorHeight = size * 0.8;
+    return `<rect x='${center ? '50%' : '0'}' y='${vCenter ? '50%' : '10'}' width='${cursorWidth}' height='${cursorHeight}' fill='${color}'>
+    <animate attributeName='opacity' values='1;0;0;1' keyTimes='0;0.4;0.6;1' dur='${cursorWidth * 100}ms' begin='${beginTime}' repeatCount='${repeatAttr}' />
+  </rect>`;
+  }
+
+  private generateLineCursor(color: string, size: number, center: boolean, vCenter: boolean, beginTime: string, repeatAttr: string): string {
+    const cursorWidth = Math.max(2, size * 0.05);
+    const cursorHeight = size * 0.8;
+    return `<rect x='${center ? '50%' : '0'}' y='${vCenter ? '50%' : '10'}' width='${cursorWidth}' height='${cursorHeight}' fill='${color}'>
+    <animate attributeName='opacity' values='1;0;0;1' keyTimes='0;0.4;0.6;1' dur='${cursorWidth * 100}ms' begin='${beginTime}' repeatCount='${repeatAttr}' />
+  </rect>`;
+  }
+
+  private generateUnderscoreCursor(color: string, size: number, center: boolean, vCenter: boolean, beginTime: string, repeatAttr: string): string {
+    const cursorWidth = Math.max(2, size * 0.3);
+    const cursorHeight = Math.max(2, size * 0.05);
+    const cursorY = vCenter ? '50%' : '10';
+    return `<rect x='${center ? '50%' : '0'}' y='${cursorY}' width='${cursorWidth}' height='${cursorHeight}' fill='${color}'>
+    <animate attributeName='opacity' values='1;0;0;1' keyTimes='0;0.4;0.6;1' dur='${cursorWidth * 100}ms' begin='${beginTime}' repeatCount='${repeatAttr}' />
+  </rect>`;
   }
 
   /**
@@ -124,15 +231,21 @@ export class SVGGenerator {
    * Generate a single text element
    */
   private generateText(line: string, index: number): string {
-    const { font, size, color, center, vCenter, letterSpacing } = this.options;
+    const { font, size, color, center, vCenter, letterSpacing, gradient, textShadow } = this.options;
 
-    return `<text font-family='"${font}", monospace' 
-      fill='${color}' 
+    // Use gradient fill if gradient mode is enabled
+    const fillValue = gradient ? 'url(#textGradient)' : color;
+
+    // Apply text shadow filter if enabled
+    const filterAttr = textShadow ? " filter='url(#textShadow)'" : '';
+
+    return `<text font-family='"${font}", monospace'
+      fill='${fillValue}'
       font-size='${size}'
       dominant-baseline='${vCenter ? 'middle' : 'auto'}'
-      x='${center ? '50%' : '0%'}' 
+      x='${center ? '50%' : '0%'}'
       text-anchor='${center ? 'middle' : 'start'}'
-      letter-spacing='${letterSpacing}'>
+      letter-spacing='${letterSpacing}'${filterAttr}>
   <textPath xlink:href='#path${index}'>
     ${this.escapeHTML(line)}
   </textPath>

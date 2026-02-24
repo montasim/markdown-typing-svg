@@ -29,8 +29,12 @@ export function buildQueryString(options: TypingSVGOptions): string {
     if (!shouldSkip) {
       // Remove hash from colors for URL
       let stringValue = String(value);
-      if (key === 'color' || key === 'background') {
+      if (key === 'color' || key === 'background' || key === 'gradientFrom' || key === 'gradientTo' || key === 'cursorColor' || key === 'textShadowColor') {
         stringValue = stringValue.replace(/^#/, '');
+      }
+      // Handle characterPauses array
+      if (key === 'characterPauses' && Array.isArray(value)) {
+        stringValue = value.join(',');
       }
       params.set(key, stringValue);
     }
@@ -161,6 +165,88 @@ export function parseQueryParams(searchParams: URLSearchParams): Partial<TypingS
       options.letterSpacing = letterSpacing;
     }
   }
-  
+
+  const gradient = searchParams.get('gradient');
+  if (gradient) options.gradient = gradient === 'true';
+
+  const gradientFrom = searchParams.get('gradientFrom');
+  if (gradientFrom) options.gradientFrom = `#${gradientFrom}`;
+
+  const gradientTo = searchParams.get('gradientTo');
+  if (gradientTo) options.gradientTo = `#${gradientTo}`;
+
+  const cursor = searchParams.get('cursor');
+  if (cursor) options.cursor = cursor === 'true';
+
+  const cursorColor = searchParams.get('cursorColor');
+  if (cursorColor) options.cursorColor = `#${cursorColor}`;
+
+  const borderRadius = searchParams.get('borderRadius');
+  if (borderRadius) {
+    const parsedBorderRadius = parseInt(borderRadius, 10);
+    if (!isNaN(parsedBorderRadius)) {
+      options.borderRadius = parsedBorderRadius;
+    }
+  }
+
+  const textShadow = searchParams.get('textShadow');
+  if (textShadow) options.textShadow = textShadow === 'true';
+
+  const textShadowBlur = searchParams.get('textShadowBlur');
+  if (textShadowBlur) {
+    const parsedTextShadowBlur = parseFloat(textShadowBlur);
+    if (!isNaN(parsedTextShadowBlur)) {
+      options.textShadowBlur = parsedTextShadowBlur;
+    }
+  }
+
+  const textShadowColor = searchParams.get('textShadowColor');
+  if (textShadowColor) options.textShadowColor = `#${textShadowColor}`;
+
+  const textShadowOffsetX = searchParams.get('textShadowOffsetX');
+  if (textShadowOffsetX) {
+    const parsedTextShadowOffsetX = parseFloat(textShadowOffsetX);
+    if (!isNaN(parsedTextShadowOffsetX)) {
+      options.textShadowOffsetX = parsedTextShadowOffsetX;
+    }
+  }
+
+  const textShadowOffsetY = searchParams.get('textShadowOffsetY');
+  if (textShadowOffsetY) {
+    const parsedTextShadowOffsetY = parseFloat(textShadowOffsetY);
+    if (!isNaN(parsedTextShadowOffsetY)) {
+      options.textShadowOffsetY = parsedTextShadowOffsetY;
+    }
+  }
+
+  const animationType = searchParams.get('animationType');
+  if (animationType && ['typing', 'fade', 'slide', 'bounce', 'wave'].includes(animationType)) {
+    options.animationType = animationType as 'typing' | 'fade' | 'slide' | 'bounce' | 'wave';
+  }
+
+  const easing = searchParams.get('easing');
+  if (easing && ['linear', 'ease-in', 'ease-out', 'ease-in-out', 'custom'].includes(easing)) {
+    options.easing = easing as 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | 'custom';
+  }
+
+  const easingBezier = searchParams.get('easingBezier');
+  if (easingBezier) options.easingBezier = easingBezier;
+
+  const cursorStyle = searchParams.get('cursorStyle');
+  if (cursorStyle && ['block', 'line', 'underscore'].includes(cursorStyle)) {
+    options.cursorStyle = cursorStyle as 'block' | 'line' | 'underscore';
+  }
+
+  const reverseTyping = searchParams.get('reverseTyping');
+  if (reverseTyping) options.reverseTyping = reverseTyping === 'true';
+
+  const characterPauses = searchParams.get('characterPauses');
+  if (characterPauses) {
+    const parsedCharacterPauses = characterPauses.split(',').map(p => parseInt(p.trim(), 10)).filter(n => !isNaN(n));
+    if (parsedCharacterPauses.length > 0) {
+      options.characterPauses = parsedCharacterPauses;
+    }
+  }
+
   return options;
 }

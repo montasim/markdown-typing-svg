@@ -1,5 +1,6 @@
 import { generateHomeMetadata } from '@/lib/seo/metadata';
 import { generateHomeStructuredData } from '@/lib/seo/structured-data';
+import { ToastProvider } from '@/hooks/useToast';
 
 export const metadata = generateHomeMetadata();
 
@@ -12,16 +13,18 @@ export default function HomeLayout({
   const structuredData = generateHomeStructuredData();
 
   return (
-    <>
-      {/* JSON-LD Structured Data */}
-      {structuredData.map((data, index) => (
-        <script
-          key={index}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-        />
-      ))}
-      {children}
-    </>
+    <ToastProvider>
+      <>
+        {/* JSON-LD Structured Data */}
+        {structuredData.map((data, index) => (
+          <script
+            key={index}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+          />
+        ))}
+        {children}
+      </>
+    </ToastProvider>
   );
 }

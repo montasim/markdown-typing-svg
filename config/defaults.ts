@@ -21,6 +21,23 @@ export const defaultOptions: TypingSVGOptions = {
   separator: ';',
   random: false,
   letterSpacing: 'normal',
+  gradient: false,
+  gradientFrom: '#36BCF7',
+  gradientTo: '#B836F7',
+  cursor: false,
+  cursorColor: '#36BCF7',
+  borderRadius: 0,
+  textShadow: false,
+  textShadowBlur: 4,
+  textShadowColor: '#36BCF7',
+  textShadowOffsetX: 0,
+  textShadowOffsetY: 0,
+  animationType: 'typing',
+  easing: 'linear',
+  easingBezier: '0.4, 0, 0.2, 1',
+  cursorStyle: 'block',
+  reverseTyping: false,
+  characterPauses: undefined,
 };
 
 /**
