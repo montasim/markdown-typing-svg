@@ -173,14 +173,13 @@ export default function DemoPage() {
                     </div>
                     
                     <div className="space-y-4">
-                      <Label htmlFor="size" className="block mb-3">Font Size: {options.size}px</Label>
-                      <Slider
+                      <Label htmlFor="size" className="block mb-3">Font Size</Label>
+                      <Input
                         id="size"
-                        min={10}
-                        max={72}
-                        step={1}
+                        type="number"
                         value={options.size}
-                        onValueChange={(value) => handleOptionsChange({ size: value })}
+                        onChange={(e) => handleOptionsChange({ size: parseInt(e.target.value) || 0 })}
+                        placeholder="20"
                       />
                     </div>
                   </div>
@@ -266,26 +265,24 @@ export default function DemoPage() {
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-4">
-                      <Label htmlFor="width" className="block mb-3">Width: {options.width}px</Label>
-                      <Slider
+                      <Label htmlFor="width" className="block mb-3">Width</Label>
+                      <Input
                         id="width"
-                        min={100}
-                        max={1000}
-                        step={5}
+                        type="number"
                         value={options.width}
-                        onValueChange={(value) => handleOptionsChange({ width: value })}
+                        onChange={(e) => handleOptionsChange({ width: parseInt(e.target.value) || 0 })}
+                        placeholder="435"
                       />
                     </div>
                     
                     <div className="space-y-4">
-                      <Label htmlFor="height" className="block mb-3">Height: {options.height}px</Label>
-                      <Slider
+                      <Label htmlFor="height" className="block mb-3">Height</Label>
+                      <Input
                         id="height"
-                        min={20}
-                        max={500}
-                        step={5}
+                        type="number"
                         value={options.height}
-                        onValueChange={(value) => handleOptionsChange({ height: value })}
+                        onChange={(e) => handleOptionsChange({ height: parseInt(e.target.value) || 0 })}
+                        placeholder="50"
                       />
                     </div>
                   </div>
