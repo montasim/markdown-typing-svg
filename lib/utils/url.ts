@@ -2,7 +2,7 @@ import { TypingSVGOptions } from '@/types/options';
 import { defaultOptions } from '@/config/defaults';
 
 /**
- * Build query string from options, excluding default values
+ * Build query string from options, including all customization options
  */
 export function buildQueryString(options: TypingSVGOptions): string {
   const params = new URLSearchParams();
@@ -10,34 +10,20 @@ export function buildQueryString(options: TypingSVGOptions): string {
   // Set lines with separator - custom encode to preserve semicolons
   params.set('lines', customEncode(options.lines.join(options.separator)));
   
-  // Only include non-default values for other parameters
+  // Include all options in the URL for complete transparency
   Object.entries(options).forEach(([key, value]) => {
     if (key === 'lines') return; // Already handled above
     
-    const keyOfOptions = key as keyof TypingSVGOptions;
-    const defaultValue = defaultOptions[keyOfOptions];
-    
-    // Skip if value matches default
-    let shouldSkip = false;
-    if (Array.isArray(value) && Array.isArray(defaultValue)) {
-      // Compare arrays by value
-      shouldSkip = JSON.stringify(value) === JSON.stringify(defaultValue);
-    } else {
-      shouldSkip = value === defaultValue;
+    // Remove hash from colors for URL
+    let stringValue = String(value);
+    if (key === 'color' || key === 'background' || key === 'gradientFrom' || key === 'gradientTo' || key === 'cursorColor' || key === 'textShadowColor') {
+      stringValue = stringValue.replace(/^#/, '');
     }
-    
-    if (!shouldSkip) {
-      // Remove hash from colors for URL
-      let stringValue = String(value);
-      if (key === 'color' || key === 'background' || key === 'gradientFrom' || key === 'gradientTo' || key === 'cursorColor' || key === 'textShadowColor') {
-        stringValue = stringValue.replace(/^#/, '');
-      }
-      // Handle characterPauses array
-      if (key === 'characterPauses' && Array.isArray(value)) {
-        stringValue = value.join(',');
-      }
-      params.set(key, stringValue);
+    // Handle characterPauses array
+    if (key === 'characterPauses' && Array.isArray(value)) {
+      stringValue = value.join(',');
     }
+    params.set(key, stringValue);
   });
 
   return params.toString();
