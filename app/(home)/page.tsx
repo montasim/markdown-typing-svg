@@ -231,7 +231,7 @@ export default function DemoPage() {
     setDraggedIndex(null);
   };
 
-  const queryString = buildQueryString(options);
+  const queryString = buildQueryString(debouncedOptions);
   const svgUrl = `/api/svg?${queryString}`;
   const imageUrl = typeof window !== 'undefined' ? `${window.location.origin}${svgUrl}` : svgUrl;
   const repoLink = 'https://git.io/typing-svg';
@@ -561,6 +561,7 @@ export default function DemoPage() {
                 <>
                   <div className="relative bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
                     <img
+                      key={queryString}
                       src={svgUrl}
                       alt="Typing SVG Preview"
                       className={`w-full mx-auto ${showBorder ? 'border-2 border-dashed border-red-500 rounded' : ''}`}
