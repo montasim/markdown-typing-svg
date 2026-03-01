@@ -6,17 +6,20 @@ import { defaultOptions } from '@/config/defaults';
  */
 export function buildQueryString(options: TypingSVGOptions): string {
   const params = new URLSearchParams();
-  
+
   // Set lines with separator - custom encode to preserve semicolons
   params.set('lines', customEncode(options.lines.join(options.separator)));
-  
-  // Include all options in the URL for complete transparency
+
+  // Only include defined values in URL (skip undefined/null)
   Object.entries(options).forEach(([key, value]) => {
     if (key === 'lines') return; // Already handled above
-    
+
+    // Skip undefined or null values (for optional fields like characterPauses)
+    if (value === undefined || value === null) return;
+
     // Remove hash from colors for URL
     let stringValue = String(value);
-    if (key === 'color' || key === 'background' || key === 'gradientFrom' || key === 'gradientTo' || key === 'cursorColor' || key === 'textShadowColor') {
+    if (['color', 'background', 'gradientFrom', 'gradientTo', 'cursorColor', 'textShadowColor'].includes(key)) {
       stringValue = stringValue.replace(/^#/, '');
     }
     // Handle characterPauses array

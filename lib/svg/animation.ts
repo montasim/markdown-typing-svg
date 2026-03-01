@@ -360,6 +360,8 @@ export class AnimationCalculator {
         ];
       }
 
+      const easing = this.getEasingFunction(3);  // 3 segments (4 keyTimes - 1)
+
       return {
         attributeName: 'opacity',
         begin,
@@ -367,7 +369,8 @@ export class AnimationCalculator {
         fill: 'freeze',
         values,
         keyTimes,
-        calcMode: 'linear',  // Opacity transitions work best with linear
+        calcMode: easing.calcMode,
+        keySplines: easing.keySplines,
       };
     } else {
       // Single-line fade: text fades in and out on same line
@@ -386,6 +389,8 @@ export class AnimationCalculator {
         '1',
       ];
 
+      const easing = this.getEasingFunction(3);  // 3 segments (4 keyTimes - 1)
+
       return {
         attributeName: 'opacity',
         begin,
@@ -393,7 +398,8 @@ export class AnimationCalculator {
         fill: freeze ? 'freeze' : 'remove',
         values,
         keyTimes,
-        calcMode: 'linear',  // Opacity transitions work best with linear
+        calcMode: easing.calcMode,
+        keySplines: easing.keySplines,
       };
     }
   }
@@ -435,6 +441,8 @@ export class AnimationCalculator {
         ];
       }
 
+      const easing = this.getEasingFunction(3);  // 3 segments (4 keyTimes - 1)
+
       return {
         attributeName: 'transform',
         type: 'translate',
@@ -443,6 +451,8 @@ export class AnimationCalculator {
         fill: 'freeze',
         values,
         keyTimes,
+        calcMode: easing.calcMode,
+        keySplines: easing.keySplines,
       };
     } else {
       // Single-line slide: text slides in and out on same line
@@ -461,6 +471,8 @@ export class AnimationCalculator {
         '1',
       ];
 
+      const easing = this.getEasingFunction(3);  // 3 segments (4 keyTimes - 1)
+
       return {
         attributeName: 'transform',
         type: 'translate',
@@ -469,6 +481,8 @@ export class AnimationCalculator {
         fill: freeze ? 'freeze' : 'remove',
         values,
         keyTimes,
+        calcMode: easing.calcMode,
+        keySplines: easing.keySplines,
       };
     }
   }
