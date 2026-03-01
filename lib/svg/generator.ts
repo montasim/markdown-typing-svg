@@ -1,4 +1,4 @@
-import { TypingSVGOptions } from '@/types/options';
+import { TypingSVGOptions, SVGAnimationConfig } from '@/types/options';
 import { GoogleFontConverter } from '@/lib/fonts/google-fonts';
 import { AnimationCalculator } from './animation';
 
@@ -112,13 +112,55 @@ export class SVGGenerator {
   private generateDefs(): string {
     const gradientDef = this.generateGradientDef();
     const filterDef = this.generateFilterDef();
+    const cssDef = this.generateCSSAnimationDef();
 
-    if (!gradientDef && !filterDef) return '';
+    if (!gradientDef && !filterDef && !cssDef) return '';
 
     return `<defs>
   ${gradientDef}
   ${filterDef}
+  ${cssDef}
 </defs>`;
+  }
+
+  /**
+   * Generate CSS animation definitions for bounce and wave
+   */
+  private generateCSSAnimationDef(): string {
+    const { animationType, duration, pause } = this.options;
+
+    if (animationType !== 'bounce' && animationType !== 'wave') return '';
+
+    const totalDuration = duration + pause;
+    let cssContent = '';
+
+    if (animationType === 'bounce') {
+      cssContent = `
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .bounce-text {
+      animation: bounce ${totalDuration}ms ease-in-out;
+    }`;
+    } else if (animationType === 'wave') {
+      const text = this.options.lines.join('');
+      // Generate per-character animation delays
+      cssContent = `
+    @keyframes wave {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .wave-char {
+      display: inline-block;
+      animation: wave ${totalDuration}ms ease-in-out;
+      animation-iteration-count: 1;
+    }`;
+    }
+
+    return `<style type='text/css'>
+${cssContent}
+</style>`;
   }
 
   /**
@@ -194,28 +236,71 @@ export class SVGGenerator {
 
   /**
    * Generate all path elements with animations
+   * For typing animation, generates animated paths
+   * For fade/slide animations, generates static paths only
    */
   private generatePaths(): string {
+    // For typing animation, we need animated paths
+    // For fade/slide, paths are static (just for positioning textPath)
+    const animationType = this.options.animationType;
+
     return this.options.lines
-      .map((_, index) => this.generatePath(index))
+      .map((_, index) => {
+        if (animationType === 'typing') {
+          return this.generateAnimatedPath(index);
+        } else {
+          // For fade/slide, generate static invisible paths for textPath reference
+          return this.generateStaticPath(index);
+        }
+      })
       .join('');
   }
 
   /**
-   * Generate a single path element with animation
+   * Generate a single path element with animation (for typing animation)
    */
-  private generatePath(index: number): string {
+  private generateAnimatedPath(index: number): string {
     const animation = new AnimationCalculator(this.options, index).calculate();
 
-    return `<path id='path${index}'>
-  <animate id='d${index}' 
-           attributeName='d' 
+    // Build animate attributes
+    let animateAttrs = `attributeName='${animation.attributeName || 'd'}'`;
+
+    animateAttrs += `
            begin='${animation.begin}'
-           dur='${animation.dur}' 
+           dur='${animation.dur}'
            fill='${animation.fill}'
-           values='${animation.values.join(' ; ')}' 
-           keyTimes='${animation.keyTimes.join(';')}' />
+           values='${animation.values.join(' ; ')}'
+           keyTimes='${animation.keyTimes.join(';')}'`;
+
+    // Add calcMode if specified (for easing)
+    if (animation.calcMode) {
+      animateAttrs += `
+           calcMode='${animation.calcMode}'`;
+    }
+
+    // Add keySplines if specified (for spline easing)
+    if (animation.keySplines && animation.keySplines.length > 0) {
+      animateAttrs += `
+           keySplines='${animation.keySplines.join(';')}'`;
+    }
+
+    return `<path id='path${index}'>
+  <animate id='d${index}' ${animateAttrs} />
 </path>`;
+  }
+
+  /**
+   * Generate a static path for fade/slide animations (no animation, just for textPath)
+   */
+  private generateStaticPath(index: number): string {
+    const { width, multiline, size } = this.options;
+    const height = this.calculateHeight(this.options.height, size, multiline, this.options.lines.length);
+    const nextIndex = index + 1;
+    const lineHeight = size + 5;
+    const yOffset = multiline ? nextIndex * lineHeight : height / 2;
+
+    // Static path at full width for textPath to follow
+    return `<path id='path${index}' d='m0,${yOffset} h${width}' />`;
   }
 
   /**
@@ -229,9 +314,11 @@ export class SVGGenerator {
 
   /**
    * Generate a single text element
+   * For fade/slide animations, includes inline <animate> elements
+   * For bounce/wave animations, applies CSS classes
    */
   private generateText(line: string, index: number): string {
-    const { font, size, color, center, vCenter, letterSpacing, gradient, textShadow } = this.options;
+    const { font, size, color, center, vCenter, letterSpacing, gradient, textShadow, animationType } = this.options;
 
     // Use gradient fill if gradient mode is enabled
     const fillValue = gradient ? 'url(#textGradient)' : color;
@@ -239,17 +326,119 @@ export class SVGGenerator {
     // Apply text shadow filter if enabled
     const filterAttr = textShadow ? " filter='url(#textShadow)'" : '';
 
-    return `<text font-family='"${font}", monospace'
+    // Build text element with potential inline animation or CSS classes
+    const textElementStart = `<text font-family='"${font}", monospace'
       fill='${fillValue}'
       font-size='${size}'
       dominant-baseline='${vCenter ? 'middle' : 'auto'}'
       x='${center ? '50%' : '0%'}'
       text-anchor='${center ? 'middle' : 'start'}'
-      letter-spacing='${letterSpacing}'${filterAttr}>
+      letter-spacing='${letterSpacing}'${filterAttr}>`;
+
+    const textElementEnd = `</text>`;
+
+    // For bounce and wave animations, apply CSS classes
+    if (animationType === 'bounce') {
+      return `${textElementStart}
+  <textPath xlink:href='#path${index}' class='bounce-text'>
+    ${this.escapeHTML(line)}
+  </textPath>
+${textElementEnd}`;
+    }
+
+    if (animationType === 'wave') {
+      // For wave, wrap each character in a tspan with staggered animation
+      const chars = line.split('');
+      const content = chars.map((char, i) => {
+        const delay = (i * 0.1).toFixed(2);
+        if (char === ' ') {
+          return '<tspan xml:space="preserve"> </tspan>';
+        }
+        return `<tspan class='wave-char' style='animation-delay: ${delay}s'>${this.escapeHTML(char)}</tspan>`;
+      }).join('');
+
+      return `${textElementStart}
+  <textPath xlink:href='#path${index}'>
+    ${content}
+  </textPath>
+${textElementEnd}`;
+    }
+
+    // For fade and slide animations, we need inline animation on the text element
+    if (animationType === 'fade' || animationType === 'slide') {
+      const animation = new AnimationCalculator(this.options, index).calculate();
+      const inlineAnimation = this.generateInlineAnimation(animation);
+
+      return `${textElementStart}
+  ${inlineAnimation}
   <textPath xlink:href='#path${index}'>
     ${this.escapeHTML(line)}
   </textPath>
-</text>`;
+${textElementEnd}`;
+    }
+
+    // For typing animation, no inline animation needed (it's on the path)
+    return `${textElementStart}
+  <textPath xlink:href='#path${index}'>
+    ${this.escapeHTML(line)}
+  </textPath>
+${textElementEnd}`;
+  }
+
+  /**
+   * Generate inline <animate> element for text-based animations (fade/slide)
+   */
+  private generateInlineAnimation(animation: SVGAnimationConfig): string {
+    const isTransform = animation.attributeName === 'transform';
+
+    // For transform animations, use animateTransform element
+    if (isTransform) {
+      let animateAttrs = `attributeName='${animation.attributeName}'
+           type='${animation.type || 'translate'}'
+           begin='${animation.begin}'
+           dur='${animation.dur}'
+           fill='${animation.fill}'
+           values='${animation.values.join(';')}'
+           keyTimes='${animation.keyTimes.join(';')}'`;
+
+      // Add calcMode if specified
+      if (animation.calcMode) {
+        animateAttrs += `
+           calcMode='${animation.calcMode}'`;
+      }
+
+      // Add keySplines if specified
+      if (animation.keySplines && animation.keySplines.length > 0) {
+        animateAttrs += `
+           keySplines='${animation.keySplines.join(';')}'`;
+      }
+
+      return `<animateTransform ${animateAttrs} />`;
+    }
+
+    // For other attributes (like opacity), use regular animate element
+    let animateAttrs = `attributeName='${animation.attributeName}'`;
+
+    animateAttrs += `
+           begin='${animation.begin}'
+           dur='${animation.dur}'
+           fill='${animation.fill}'
+           values='${animation.values.join(';')}'
+           keyTimes='${animation.keyTimes.join(';')}'`;
+
+    // Add calcMode if specified
+    if (animation.calcMode) {
+      animateAttrs += `
+           calcMode='${animation.calcMode}'`;
+    }
+
+    // Add keySplines if specified
+    if (animation.keySplines && animation.keySplines.length > 0) {
+      animateAttrs += `
+           keySplines='${animation.keySplines.join(';')}'`;
+    }
+
+    return `<animate ${animateAttrs} />`;
   }
 
   /**

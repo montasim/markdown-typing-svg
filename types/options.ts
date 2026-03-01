@@ -86,6 +86,14 @@ export interface SVGAnimationConfig {
   values: string[];
   /** Animation key times */
   keyTimes: string[];
+  /** SMIL calcMode for easing (linear, spline, discrete, paced) */
+  calcMode?: 'linear' | 'spline' | 'discrete' | 'paced';
+  /** Cubic-bezier control points for spline easing */
+  keySplines?: string[];
+  /** Attribute name to animate (d, opacity, transform) */
+  attributeName?: string;
+  /** Transform type (for transform animations) */
+  type?: string;
 }
 
 /**

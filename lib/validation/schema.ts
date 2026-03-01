@@ -35,7 +35,7 @@ export const TypingSVGOptionsSchema: z.ZodType<TypingSVGOptions> = z.object({
   textShadowOffsetY: z.number(),
   animationType: z.enum(['typing', 'fade', 'slide', 'bounce', 'wave']),
   easing: z.enum(['linear', 'ease-in', 'ease-out', 'ease-in-out', 'custom']),
-  easingBezier: z.string().optional(),
+  easingBezier: z.string().regex(/^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/, 'easingBezier must be in format: "x1, y1, x2, y2" (e.g., "0.4, 0, 0.2, 1")').optional(),
   cursorStyle: z.enum(['block', 'line', 'underscore']),
   reverseTyping: z.boolean(),
   characterPauses: z.array(z.number()).optional(),
