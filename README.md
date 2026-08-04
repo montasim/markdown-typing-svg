@@ -67,7 +67,7 @@ The editor exposes additional validated parameters for easing, reverse typing, c
 
 ### Prerequisites
 
-- Node.js 20 or newer
+- Node.js 20.9.0 or newer
 - pnpm
 
 ```bash
