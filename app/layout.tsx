@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -42,6 +43,15 @@ export default function RootLayout({
           <main className="relative z-10">{children}</main>
           <Footer />
         </div>
+        <Script
+          id="support-kori-widget"
+          src="https://www.supportkori.com/widget.js"
+          data-id="montasim"
+          data-message="Support montasim"
+          data-color="#FFDD00"
+          data-position="right"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
